@@ -5,3 +5,4 @@
 #include <errno.h>
 #include <memory.h>
 #include <sys/stat.h>
+#include <sys/wait.h>

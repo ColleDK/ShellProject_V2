@@ -2,14 +2,13 @@
 #include "main.h"
 
 /**
- * Global variables and functions
+ * Global variables
  */
-int TRUE = 1;
-int isPipe = 0;
-int isIODir = 0;
-char slash[1];
-char pwd[100];
-void grepCommand(); //i need to declare this because i use it in a function before the real declaration
+int TRUE = 1; // endless loop
+int isPipe = 0; // check for pipe
+int isIODir = 0; // check for IO direction
+char slash[1]; // to make temporary paths
+char pwd[100]; // path to current directory
 
 
 /**
@@ -78,9 +77,9 @@ char* inputSplitter(char* arr, int inputNumber){
  * Change directory
  */
 void cdCommand(char* secondInput) {
-    if (strcmp("~",secondInput) == 0 || strcmp("",secondInput) == 0){
+    if (strcmp("~",secondInput) == 0 || strcmp("",secondInput) == 0){ //checks if the secondinput is empty or ~ then it should go to home directory
         chdir(getenv("HOME"));
-        getcwd(pwd,100);
+        getcwd(pwd,100); // update internal pwd
     }
     else {
         chdir(pwd);
@@ -96,23 +95,27 @@ void cdCommand(char* secondInput) {
 void lsCommand(char* secondInput, char* thirdInput, char* fourthInput, char* fifthInput, char* sixthInput) {
     // check if there is pipe
     if (isPipe == 0) {
-        int pid = fork();
-        if (pid > 0) {
-            wait(NULL);
+        int pid = fork(); // make a child process
+        if (pid < 0){
+            perror("ERROR ");
+            exit(0);
+        }
+        else if (pid > 0) {
+            wait(NULL); // wait for child process to finish
         } else {
-            char *myargs[4];
-            myargs[0] = strdup("ls");
-            if (strcmp("", secondInput) != 0) {
+            char *myargs[4]; // max amount is 3 inputs + NULL end
+            myargs[0] = strdup("ls"); // duplicate ls into arguments
+            if (strcmp("", secondInput) != 0) { //check if there is another input if yes insert it else put NULL
                 myargs[1] = strdup(secondInput);
             } else {
                 myargs[1] = NULL;
             }
-            if (strcmp("", thirdInput) != 0) {
+            if (strcmp("", thirdInput) != 0) { // same as above
                 myargs[2] = strdup(thirdInput);
             } else { myargs[2] = NULL; }
-            myargs[3] = NULL;
+            myargs[3] = NULL; // last argument is always NULL
 
-            execvp(myargs[0], myargs);
+            execvp(myargs[0], myargs); // execute ls command
         }
     }
 
@@ -139,10 +142,10 @@ void mkdirCommand(char* secondInput){
     //if it doesnt exist make directory
     if (isDirectoryExists(tempPath) == 0) {
         mkdir(tempPath,777);
-        free(tempPath);
+        free(tempPath); // remember to free heap
     } else {
         printf("Directory already exists\n");
-        free(tempPath);
+        free(tempPath);// remember to free heap
     }
 }
 
@@ -159,10 +162,10 @@ void rmdirCommand(char* secondInput){
     //if it exist remove directory
     if (isDirectoryExists(tempPath) != 0) {
         rmdir(tempPath);
-        free(tempPath);
+        free(tempPath);// remember to free heap
     } else {
         printf("Directory doesn't exists\n");
-        free(tempPath);
+        free(tempPath);// remember to free heap
     }
 }
 
@@ -170,46 +173,21 @@ void rmdirCommand(char* secondInput){
  * https://stackoverflow.com/questions/13450809/how-to-search-a-string-in-a-char-array-in-c
  * use strstr() to search for word in and output if found
  */
-void grepCommand(char* secondInput, char* thirdInput, int lsEnabled, char lsName[], char grepName[]){
-    //check if it came from lscommand
-    if (lsEnabled == 0) {
-        // make temporary path to the file
-        char *tempPath = malloc((strlen(pwd) + strlen(thirdInput) + strlen(slash)) * sizeof(char));
-        strcpy(tempPath, pwd);
-        strcat(tempPath, thirdInput);
-        // give pointer read permissions
-        FILE *f = fopen(tempPath, "r");
-        // check if file exists
-        if (f != NULL) {
-            char fileArr[256] = "";
-            arrayCleaner(fileArr, sizeof(fileArr));
-            char *string;
-            // get 1 line at a time
-            while (fgets(fileArr, 256, f) != NULL) {
-                // built in function to check if letter or word is in another char[]
-                string = strstr(fileArr, secondInput);
-                // if grepped word is found in line then print out line
-                if (string != NULL) {
-                    printf("%s", fileArr);
-                }
-            }
-        } else {
-            printf("No file found\n");
-        }
-        fclose(f);
-        free(tempPath);
+void grepCommand(char* secondInput, char* thirdInput){
+    int pid = fork(); // make child process
+    if (pid < 0){ // fork error
+        perror("Error: ");
+        exit(0);
+    }
+    else if (pid == 0) {
+        char *myargs[4] = {"grep", secondInput, thirdInput,NULL}; //prepare command arguments
+        execvp(myargs[0],myargs); //execute command
     }
     else{
-        // maybe pointless but check if pointer is non empty
-        if (lsName != NULL){
-            char* string;
-            // check if grep word is in name of ls file/directory
-            string = strstr(lsName,grepName);
-            if (string != NULL){
-                printf("%s\n", lsName);
-            }
-        }
+        wait(NULL); // wait for child process
     }
+
+
 }
 
 
@@ -221,10 +199,13 @@ void grepCommand(char* secondInput, char* thirdInput, int lsEnabled, char lsName
 void catCommand(char* secondInput, char* fourthInput, char* fifthInput){
     if (isIODir == 1){
         // inspiration from http://www.cs.loyola.edu/~jglenn/702/S2005/Examples/dup2.html
-        int status;
-        int pid = fork();
-        if (pid > 0){
-            waitpid(pid,&status,0);
+        int pid = fork(); // create child process
+        if (pid < 0){// fork error
+            perror("ERROR");
+            exit(0);
+        }
+        else if (pid > 0){
+            wait(NULL); // wait for child process to finish
         } else{
             // open the file with write only to use in dup2
             int out = open(fourthInput,O_WRONLY);
@@ -233,6 +214,7 @@ void catCommand(char* secondInput, char* fourthInput, char* fifthInput){
                 creat(fourthInput,0777);
                 out = open(fourthInput,O_WRONLY);
             }
+            // set the STDOUT to point to the file
             dup2(out,STDOUT_FILENO);
             // close file open cause we already duped it
             close(out);
@@ -241,62 +223,63 @@ void catCommand(char* secondInput, char* fourthInput, char* fifthInput){
             myargs[0] = "cat";
             myargs[1] = secondInput;
             myargs[2] = NULL;
-            execvp(myargs[0],myargs);
+            execvp(myargs[0],myargs); // execute argument which will output to the file
         }
     }
 
     else if (isPipe == 0) {
-        // give pointer read permissions
-        int status;
-        int pid = fork();
-        if (pid > 0){
-            waitpid(pid,&status,0);
+        int pid = fork(); // create child process
+        if (pid < 0){
+            perror("ERROR");
+            exit(0);
+        }
+        else if (pid > 0){
+            wait(NULL); // wait for child process to finish
         } else{
             char* myargs[3];
             myargs[0] = "cat";
             myargs[1] = secondInput;
             myargs[2] = NULL;
-            execvp(myargs[0],myargs);
+            execvp(myargs[0],myargs); // execute arguments
         }
     }
+
     else {
         // if grep is in cat
         if (strcmp("grep", fourthInput) == 0) {
-            int pipefd[2];
+            int pipefd[2]; // create an array which is used as our pipe
             int pid;
-            char recv[256];
 
-            pipe (pipefd);
+            pipe (pipefd); // set up the pipe
+            pid=fork(); // make child process
 
-            pid=fork();
-
-            if(pid<0){
-                perror("fork");
-                exit(1);
+            if(pid<0){ // fork error
+                perror("ERROR");
+                exit(0);
             }
             else if (pid==0)
             {
                 //in child proc
-                close (pipefd[0]);
-                dup2(pipefd[1],1);
+                close (pipefd[0]); // child doesnt read
+                dup2(pipefd[1],1); // set output to the pipe write
                 char* myargs[3] = {"cat",secondInput, NULL};
-                execvp(myargs[0],myargs);
+                execvp(myargs[0],myargs); // execute cat command
 
-            }else
-            {
-                close(pipefd[1]); // parent doesn't write
-
-                // https://stackoverflow.com/questions/10700982/redirecting-stdout-to-pipe-in-c
-                while(read(pipefd[0], recv, 256) > 0)
-                {
-//                    char* myargs[3] = {"grep", fifthInput, NULL};
-//                    execvp(myargs[0],myargs);
-                    write(1, recv, 256); // fd = 1 -> stdout
+            }else {
+                // in parent proc
+                pid = fork(); // fork again so we dont use parent to execute command
+                if (pid == 0) {
+                    close(pipefd[1]); // parent doesn't write
+                    dup2(pipefd[0], 0); //set input as the output from child
+                    char *myargs[3] = {"grep", fifthInput, NULL}; // use grep command with specified word
+                    execvp(myargs[0], myargs); //execute grep command
+                    close(pipefd[0]); // close the pipe read
                 }
-                close(pipefd[0]);
-                wait(NULL);
+                else{
+                    wait(NULL); //wait for grep child
+                }
+                wait(NULL); // wait for cat child
             }
-
         }
     }
 }
@@ -326,7 +309,10 @@ int main() {
 
 
     while (TRUE) {
+        // set pipe and IO direction to false
         isPipe = 0;
+        isIODir = 0;
+        // clean the input array
         arrayCleaner(input, sizeof(input));
         /**
          * Show current path + $ in the console
@@ -342,7 +328,7 @@ int main() {
 
 
         /**
-         * Check for pipe
+         * Check for pipe and IO redirection
          */
         for (int j = 0; j < strlen(input); ++j) {
             if (input[j] == '|') {
@@ -366,6 +352,7 @@ int main() {
 
 
 
+        // check what command was written and execute the specified command
         if (strcmp("cd", firstInput) == 0) {
             cdCommand(secondInput);
         }
@@ -382,16 +369,6 @@ int main() {
             system("clear\n");
         }
 
-            /**
-             * Echoes everything after echo and space
-             */
-        else if (strcmp("echo", firstInput) == 0) {
-            for (int i = 5; i < strlen(input); ++i) {
-                printf("%c", input[i]);
-            }
-            printf("\n");
-        }
-
         else if (strcmp("pwd", firstInput) == 0){
             printf("%s\n",pwd);
         }
@@ -405,6 +382,7 @@ int main() {
         }
 
         else if (strcmp("grep", firstInput) == 0) {
+            grepCommand(secondInput,thirdInput);
         }
 
         else if (strcmp("cat", firstInput) == 0) {
@@ -422,7 +400,7 @@ int main() {
 
 
         /**
-         * Clean the arrays for next loop and flush input from keyboard
+         * Free arrays for next loop and flush input from keyboard
          */
         free(firstInput);
         free(secondInput);
