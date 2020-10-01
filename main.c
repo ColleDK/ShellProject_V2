@@ -119,11 +119,126 @@ void lsCommand(char* secondInput, char* thirdInput, char* fourthInput, char* fif
         }
     }
 
-        // MAKE LATER
-    else {
-        // if pipe is enabled (only grep is allowed in program) then get name and send to grepcommand
-        if (strcmp(secondInput, "|") == 0) {
 
+    else {
+        // if pipe is enabled (only grep is allowed in program) check what space the grep is at and execute command
+        if (strcmp(secondInput, "|") == 0) {
+            if (strcmp("grep", thirdInput) == 0) {
+                int pipefd[2]; // create an array which is used as our pipe
+                int pid;
+
+                pipe (pipefd); // set up the pipe
+                pid=fork(); // make child process
+
+                if(pid<0){ // fork error
+                    perror("ERROR");
+                    exit(0);
+                }
+                else if (pid==0)
+                {
+                    //in child proc
+                    close (pipefd[0]); // child doesnt read
+                    dup2(pipefd[1],1); // set output to the pipe write
+                    char* myargs[2] = {"ls", NULL};
+                    execvp(myargs[0],myargs); // execute ls command
+
+                }else {
+                    // in parent proc
+                    pid = fork(); // fork again so we dont use parent to execute command
+                    if (pid == 0) {
+                        close(pipefd[1]); // parent doesn't write
+                        dup2(pipefd[0], 0); //set input as the output from child
+                        char *myargs[3] = {"grep", fourthInput, NULL}; // use grep command with specified word
+                        execvp(myargs[0], myargs); //execute grep command
+                    }
+                    else{
+                        wait(NULL); //wait for grep child
+                    }
+                    close(pipefd[0]); // close the pipe read
+                    close(pipefd[1]); // close the pipe write
+                    wait(NULL); // wait for ls child
+                }
+            }
+        }
+
+        // this is for ls -a | grep grepWord
+        if (strcmp(thirdInput, "|") == 0) {
+            if (strcmp("grep", fourthInput) == 0) {
+                int pipefd[2]; // create an array which is used as our pipe
+                int pid;
+
+                pipe (pipefd); // set up the pipe
+                pid=fork(); // make child process
+
+                if(pid<0){ // fork error
+                    perror("ERROR");
+                    exit(0);
+                }
+                else if (pid==0)
+                {
+                    //in child proc
+                    close (pipefd[0]); // child doesnt read
+                    dup2(pipefd[1],1); // set output to the pipe write
+                    char* myargs[3] = {"ls", secondInput, NULL};
+                    execvp(myargs[0],myargs); // execute ls command
+
+                }else {
+                    // in parent proc
+                    pid = fork(); // fork again so we dont use parent to execute command
+                    if (pid == 0) {
+                        close(pipefd[1]); // parent doesn't write
+                        dup2(pipefd[0], 0); //set input as the output from child
+                        char *myargs[3] = {"grep", fifthInput, NULL}; // use grep command with specified word
+                        execvp(myargs[0], myargs); //execute grep command
+                    }
+                    else{
+                        wait(NULL); //wait for grep child
+                    }
+                    close(pipefd[0]); // close the pipe read
+                    close(pipefd[1]); // close the pipe write
+                    wait(NULL); // wait for ls child
+                }
+            }
+        }
+
+        // this is for ls -a dirName | grep grepWord
+        if (strcmp(fourthInput, "|") == 0) {
+            if (strcmp("grep", fifthInput) == 0) {
+                int pipefd[2]; // create an array which is used as our pipe
+                int pid;
+
+                pipe (pipefd); // set up the pipe
+                pid=fork(); // make child process
+
+                if(pid<0){ // fork error
+                    perror("ERROR");
+                    exit(0);
+                }
+                else if (pid==0)
+                {
+                    //in child proc
+                    close (pipefd[0]); // child doesnt read
+                    dup2(pipefd[1],1); // set output to the pipe write
+                    char* myargs[4] = {"ls", secondInput, thirdInput, NULL};
+                    execvp(myargs[0],myargs); // execute ls command
+
+                }else {
+                    // in parent proc
+                    pid = fork(); // fork again so we dont use parent to execute command
+                    if (pid == 0) {
+                        close(pipefd[1]); // parent doesn't write
+                        dup2(pipefd[0], 0); //set input as the output from child
+                        char *myargs[3] = {"grep", sixthInput, NULL}; // use grep command with specified word
+                        execvp(myargs[0], myargs); //execute grep command
+                    }
+                    else{
+                        wait(NULL); //wait for grep child
+                    }
+                    close(pipefd[0]); // close the pipe read
+                    close(pipefd[1]); // close the pipe write
+                    wait(NULL); // wait for ls child
+                }
+            }
         }
     }
 }
@@ -278,6 +393,8 @@ void catCommand(char* secondInput, char* fourthInput, char* fifthInput){
                 else{
                     wait(NULL); //wait for grep child
                 }
+                close(pipefd[0]); // close the pipe read
+                close(pipefd[1]); // close the pipe write
                 wait(NULL); // wait for cat child
             }
         }
