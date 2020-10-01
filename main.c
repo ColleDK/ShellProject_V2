@@ -65,7 +65,7 @@ char* inputSplitter(char* arr, int inputNumber){
 
     // make space on heap for the input and return the pointer
     char *array = malloc((endpoint-startpoint) * sizeof(char));
-    arrayCleaner(array, sizeof(array)/sizeof(char));
+    arrayCleaner(array, strlen(array)/sizeof(char));
     int loopCounter=0;
     for (int i = startpoint; i < endpoint; ++i) {
         array[loopCounter++] = arr[i];
@@ -250,7 +250,7 @@ void lsCommand(char* secondInput, char* thirdInput, char* fourthInput, char* fif
 void mkdirCommand(char* secondInput){
     // make temporary path and check if exist
     char *tempPath = malloc((strlen(pwd) + strlen(secondInput) + strlen(slash)) * sizeof(char));
-    arrayCleaner(tempPath,sizeof(tempPath)/sizeof(char));
+    arrayCleaner(tempPath,strlen(tempPath)/sizeof(char));
     strcpy(tempPath,pwd);
     strcat(tempPath, slash);
     strcat(tempPath, secondInput);
@@ -270,7 +270,7 @@ void mkdirCommand(char* secondInput){
 void rmdirCommand(char* secondInput){
     // make temporary path and check if exist
     char *tempPath = malloc((strlen(pwd) + strlen(secondInput) + strlen(slash)) * sizeof(char));
-    arrayCleaner(tempPath,sizeof(tempPath)/sizeof(char));
+    arrayCleaner(tempPath,strlen(tempPath)/sizeof(char));
     strcpy(tempPath,pwd);
     strcat(tempPath, slash);
     strcat(tempPath, secondInput);
