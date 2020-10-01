@@ -9,7 +9,7 @@
 ### Implemented features ###
 ##### This shell will take the following inputs as arguments #####
 ### ls ###  
-Ls will output the content of a directory to the terminal. The arguments that is implemented in this program is: ls (-a) (/_DirName_) (| grep _grepWord_)   
+Ls will output the content of a directory to the terminal. The arguments that is implemented in this program is: ls (-_letter_) (/_DirName_) (| grep _grepWord_)   
 Everything inside the parenthesis is optional and can be combined together.
 
 ### cd ### 
