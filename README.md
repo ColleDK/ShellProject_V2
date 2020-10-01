@@ -1,5 +1,5 @@
-#Shell Command #
-###How to Download ### 
+#Shell Command#
+###How to Download### 
 1. Download the zip-file and extract it
 2. Open your terminal and change the directory to the extracted location ( extractedLocation/ShellProject/ )
 3. Compile the main file with gcc main.c (if you want specified name do gcc -o _name_ main.c)
