@@ -50,3 +50,10 @@ This program uses a UNIX system's system calls to run these commands.
 Whenever one of these commands needs to be run I use fork to create a child-process which will create an identical image of the parent-process, that will then execute a command e.g. ls or cat.   
 When piping is utilized in the commands the user will run, I need to create an array that will be my read/write pipe. Since the output from the first child-process' execution doesn't need to be output to the user, I use the dup2 call to redirect my I/O to the read/write of the pipe.    
 Whenever I run an execution i might need to run some code after the child-process has finished its execution, but **only** after it has finished. For example in my pipe i cannot run the grep command before i have run the cat command, therefore i use the system call wait, which will make the program idle for a certain amount of time (i use wait(NULL) to specify i need to wait for the child-process to finish).
+
+# Bibliography #
+1. https://codeforwin.org/2018/03/c-program-check-file-or-directory-exists-not.html
+2. https://stackoverflow.com/questions/13450809/how-to-search-a-string-in-a-char-array-in-c
+3. http://www.cs.loyola.edu/~jglenn/702/S2005/Examples/dup2.html
+4. https://www.quora.com/How-do-I-read-and-display-a-full-sentence-in-C
+5. https://stackoverflow.com/questions/2347770/how-do-you-clear-the-console-screen-in-c
