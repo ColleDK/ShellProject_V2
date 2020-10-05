@@ -1,4 +1,6 @@
 # Shell Command #
+This program is the 2nd iteration of my shell which will use system calls instead of hardcoded functions from https://github.com/ColleDK/ShellProject
+
 ### How to Download ### 
 1. Download the zip-file and extract it
 2. Open your terminal and change the directory to the extracted location ( extractedLocation/ShellProject/ )
