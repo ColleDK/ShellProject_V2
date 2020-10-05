@@ -5,7 +5,6 @@
 3. Compile the main file with gcc main.c (if you want specified name do gcc -o _name_ main.c)
 4. Run the compiled version with ./a.out (or if you have specified a name do ./name)
 
-
 ### Implemented features ###
 ##### This shell will take the following inputs as arguments #####
 ### ls ###  
@@ -38,8 +37,11 @@ The implemented arguments for grep is: grep _grepWord_ _fileName_
 
 ### cat ###
 Cat will output the content of a file to the terminal.   
-The arguments implemented in this program is: cat _fileName_ ( | grep _grepWord_ )
+The arguments implemented in this program is: cat _fileName_ ( | grep _grepWord_ )    
 Everything inside the parenthesis is optional.   
 
 ### exit ###
 Exit will close down the program
+
+## How it's implemented ##
+This program uses a UNIX system's system calls to run these commands. Whenever one of these commands needs to be run I use fork to create a child-process which will create an identical image of the parent process, that will then execute a command e.g. ls or cat. 
