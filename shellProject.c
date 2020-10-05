@@ -89,8 +89,7 @@ void cdCommand(char* secondInput) {
 }
 
 /**
- * https://stackoverflow.com/questions/845556/how-to-ignore-hidden-files-with-opendir-and-readdir-in-c-library
- * Searches the directory for all files except for ones that start with . or .. (hidden files)
+ * Lists what is in the directory
  */
 void lsCommand(char* secondInput, char* thirdInput, char* fourthInput, char* fifthInput, char* sixthInput) {
     // check if there is pipe
