@@ -3,4 +3,4 @@ project(ShellProject_V2 C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(ShellProject_V2 main.c)
+add_executable(ShellProject_V2 shellProject.c)

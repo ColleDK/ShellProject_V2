@@ -1,5 +1,5 @@
 #include <fcntl.h>
-#include "main.h"
+#include "shellProject.h"
 
 /**
  * Global variables

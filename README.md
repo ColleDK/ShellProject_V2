@@ -2,7 +2,7 @@
 ### How to Download ### 
 1. Download the zip-file and extract it
 2. Open your terminal and change the directory to the extracted location ( extractedLocation/ShellProject/ )
-3. Compile the main file with gcc main.c (if you want specified name do gcc -o _name_ main.c)
+3. Compile the main file with gcc shellProject.c (if you want specified name do gcc -o _name_ shellProject.c)
 4. Run the compiled version with ./a.out (or if you have specified a name do ./name)
 
 ### Implemented features ###
@@ -44,4 +44,7 @@ Everything inside the parenthesis is optional.
 Exit will close down the program
 
 ## How it's implemented ##
-This program uses a UNIX system's system calls to run these commands. Whenever one of these commands needs to be run I use fork to create a child-process which will create an identical image of the parent process, that will then execute a command e.g. ls or cat. 
+This program uses a UNIX system's system calls to run these commands.   
+Whenever one of these commands needs to be run I use fork to create a child-process which will create an identical image of the parent-process, that will then execute a command e.g. ls or cat.   
+When piping is utilized in the commands the user will run, I need to create an array that will be my read/write pipe. Since the output from the first child-process' execution doesn't need to be output to the user, I use the dup2 call to redirect my I/O to the read/write of the pipe.    
+Whenever I run an execution i might need to run some code after the child-process has finished its execution, but **only** after it has finished. For example in my pipe i cannot run the grep command before i have run the cat command, therefore i use the system call wait, which will make the program idle for a certain amount of time (i use wait(NULL) to specify i need to wait for the child-process to finish).
