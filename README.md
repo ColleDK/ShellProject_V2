@@ -39,8 +39,8 @@ The implemented arguments for grep is: grep _grepWord_ _fileName_
 
 ### cat ###
 Cat will output the content of a file to the terminal.   
-The arguments implemented in this program is: cat _fileName_ ( | grep _grepWord_ )    
-Everything inside the parenthesis is optional.   
+The arguments implemented in this program is: cat _fileName_ ( | grep _grepWord_ ) ( > _fileName_)   
+Everything inside the parenthesis is optional, but grep and I/O redirection does not work together here.   
 
 ### exit ###
 Exit will close down the program
@@ -56,4 +56,3 @@ Whenever I run an execution i might need to run some code after the child-proces
 2. https://stackoverflow.com/questions/13450809/how-to-search-a-string-in-a-char-array-in-c
 3. http://www.cs.loyola.edu/~jglenn/702/S2005/Examples/dup2.html
 4. https://www.quora.com/How-do-I-read-and-display-a-full-sentence-in-C
-5. https://stackoverflow.com/questions/2347770/how-do-you-clear-the-console-screen-in-c

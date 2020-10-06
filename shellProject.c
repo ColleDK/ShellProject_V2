@@ -400,6 +400,43 @@ void catCommand(char* secondInput, char* fourthInput, char* fifthInput){
     }
 }
 
+/**
+ * Pwd will output your current working directory
+ */
+void pwdCommand(){
+    int pid = fork(); // make child process
+    if (pid < 0){ // fork error
+        perror("Error: ");
+        exit(0);
+    }
+    else if (pid == 0) {
+        char *myargs[2] = {"pwd",NULL}; //prepare command arguments
+        execvp(myargs[0],myargs); //execute command
+    }
+    else{
+        wait(NULL); // wait for child process
+    }
+}
+
+/**
+ * Function to clear the terminal window
+ */
+void clearCommand(){
+    int pid = fork(); // make child process
+    if (pid < 0){ // fork error
+        perror("Error: ");
+        exit(0);
+    }
+    else if (pid == 0) {
+        char *myargs[4] = {"clear",NULL}; //prepare command arguments
+        execvp(myargs[0],myargs); //execute command
+    }
+    else{
+        wait(NULL); // wait for child process
+    }
+
+}
+
 
 
 
@@ -477,16 +514,12 @@ int main() {
             lsCommand(secondInput,thirdInput,fourthInput,fifthInput,sixthInput);
         }
 
-            /**
-             * will clear console but only through command line
-             * https://stackoverflow.com/questions/2347770/how-do-you-clear-the-console-screen-in-c
-             */
         else if (strcmp("clear", firstInput) == 0) {
-            system("clear\n");
+            clearCommand();
         }
 
         else if (strcmp("pwd", firstInput) == 0){
-            printf("%s\n",pwd);
+            pwdCommand();
         }
 
         else if (strcmp("mkdir", firstInput) == 0){
