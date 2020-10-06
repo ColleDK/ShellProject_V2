@@ -52,6 +52,11 @@ Whenever one of these commands needs to be run I use fork to create a child-proc
 When piping is utilized in the commands the user will run, I need to create an array that will be my read/write pipe. Since the output from the first child-process' execution doesn't need to be output to the user, I use the dup2 call to redirect my I/O to the read/write of the pipe.    
 Whenever I run an execution i might need to run some code after the child-process has finished its execution, but **only** after it has finished. For example in my pipe i cannot run the grep command before i have run the cat command, therefore i use the system call wait, which will make the program idle for a certain amount of time (i use wait(NULL) to specify i need to wait for the child-process to finish).
 
+This program will first take the input from the user via the standard input (keyboard). Then it will split the input up into an array for each argument in the input by allocating space on the heap the size of each argument.
+After this it will check the first argument and compare the string with that of the implemented arguments to the shell.
+If it finds the argument then it will give some specified arguments to that function that will handle the real execution.
+In said function the fork, pipe, I/O dir and such is handled and the function will return to main where it will free the arrays from the heap and flush the stdin from any leftover characters.
+
 Bibliography
 1. https://codeforwin.org/2018/03/c-program-check-file-or-directory-exists-not.html
 2. https://stackoverflow.com/questions/13450809/how-to-search-a-string-in-a-char-array-in-c
